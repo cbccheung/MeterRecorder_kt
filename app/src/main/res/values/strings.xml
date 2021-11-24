@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Meter Recorder</string>
+    <string name="val_per_day">%f per day</string>
+    <string name="reading">Reading</string>
+    <string name="date_time">Date &amp; Time</string>
+    <string name="new_reading">New Reading</string>
+    <string name="edit_reading">Edit Reading</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_reading">Add new reading</string>
+    <string name="time">Time</string>
+    <string name="date">Date</string>
+    <string name="more">More</string>
+</resources>
