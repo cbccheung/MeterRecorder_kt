@@ -6,42 +6,20 @@
     tools:context=".MainActivity"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?attr/listPreferredItemHeight"
-    android:paddingHorizontal="@dimen/activity_horizontal_margin">
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    android:paddingHorizontal="@dimen/activity_horizontal_margin"
+    >
 
     <TextView
-        android:id="@+id/tv_date"
+        android:id="@+id/tv_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_more"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:text="21 Nov, Sunday"
-        />
-
-    <TextView
-        android:id="@+id/tv_reading"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tv_date"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/tv_change"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="440.000"
-        />
-
-
-    <TextView
-        android:id="@+id/tv_change"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/tv_reading"
         app:layout_constraintEnd_toStartOf="@id/btn_more"
         android:textAppearance="?android:attr/textAppearanceListItem"
-        android:gravity="end"
-        tools:text="+0.503/day"
+        tools:text="Water"
         />
 
     <ImageButton
@@ -49,12 +27,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="48dp"
-        android:minHeight="32dp"
+        android:minHeight="48dp"
         app:srcCompat="@drawable/ic_baseline_more_vert_24"
         android:background="@android:color/transparent"
         android:contentDescription="@string/more"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

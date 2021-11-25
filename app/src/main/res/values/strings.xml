@@ -15,4 +15,11 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="no_items">No records</string>
+
+
+    <string name="new_meter">New Meter</string>
+    <string name="edit_meter">Edit Meter</string>
+    <string name="enter_name">Please enter a name</string>
+    <string name="name">Name</string>
+    <string name="meter_name">Meter Name</string>
 </resources>

@@ -16,8 +16,8 @@ interface ReadingDAO {
     @Delete
     suspend fun delete(vararg items: Reading)
 
-    @Query("SELECT * FROM Reading ORDER BY timeStamp DESC, id DESC")
-    fun getAll() : LiveData<List<Reading>>
+    @Query("SELECT * FROM Reading WHERE meterId = :meterId ORDER BY timeStamp DESC, id DESC")
+    fun getAll(meterId: Long) : LiveData<List<Reading>>
 
     @Query("SELECT * FROM Reading WHERE id = :id")
     fun getItem(id: Long) : LiveData<Reading>

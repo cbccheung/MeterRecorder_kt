@@ -11,6 +11,7 @@ import com.bong.meterrecorder.main.EditReadingDialogFragment
 import com.bong.meterrecorder.main.MainAdapter
 import com.bong.meterrecorder.main.MainAdapter.OnItemIdClickListener
 import com.bong.meterrecorder.room.viewmodels.ReadingViewModel
+import com.bong.meterrecorder.room.viewmodels.ViewModelUtil
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +37,8 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val viewModel = ViewModelProvider(this).get(ReadingViewModel::class.java)
+        val factory = ViewModelUtil.createFor(ReadingViewModel(application, 1))
+        val viewModel = ViewModelProvider(this, factory).get(ReadingViewModel::class.java)
         viewModel.allItems.observe(this, {
             adapter.submitList(it)
 

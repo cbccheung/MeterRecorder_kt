@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.bong.meterrecorder.room.daos.MeterDAO
 import com.bong.meterrecorder.room.daos.ReadingDAO
+import com.bong.meterrecorder.room.entities.Meter
 import com.bong.meterrecorder.room.entities.Reading
 
-@Database(entities = [Reading::class], version = 1)
+@Database(entities = [Reading::class, Meter::class], version = 1)
 abstract class DatabaseClient : RoomDatabase() {
     abstract fun readingDAO(): ReadingDAO
+    abstract fun meterDAO(): MeterDAO
 
     companion object {
         @Volatile

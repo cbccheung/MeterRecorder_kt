@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Bong/Documents/AndroidProjects/MeterRecorder_kt/app/src/main/res/layout/item_meter.xml" value="0.25" />
+        <entry key="..\:/Users/Bong/Documents/AndroidProjects/MeterRecorder_kt/app/src/main/res/layout/item_reading.xml" value="0.25" />
+        <entry key="..\:/Users/Bong/Documents/AndroidProjects/MeterRecorder_kt/app/src/main/res/layout/view_edit_meter.xml" value="0.25" />
         <entry key="..\:/Users/HKCheungCB/AndroidStudioProjects/MeterRecorder/app/src/main/res/layout/activity_main.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/HKCheungCB/AndroidStudioProjects/MeterRecorder/app/src/main/res/layout/item_reading.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/HKCheungCB/AndroidStudioProjects/MeterRecorder/app/src/main/res/layout/view_edit_reading.xml" value="0.25364583333333335" />

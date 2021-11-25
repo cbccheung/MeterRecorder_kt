@@ -8,10 +8,10 @@ import com.bong.meterrecorder.room.repository.ReadingRepository
 import com.bong.meterrecorder.room.roomdb.DatabaseClient
 import kotlinx.coroutines.launch
 
-class ReadingViewModel(application: Application) : AndroidViewModel(application){
+class ReadingViewModel(application: Application, meterId: Long) : AndroidViewModel(application){
     private val dao = DatabaseClient.getDatabase(application).readingDAO()
     private val repository = ReadingRepository(dao)
-    val allItems = repository.allItems
+    val allItems = repository.getAllItems(meterId)
 
 
     /**
