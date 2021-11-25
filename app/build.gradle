@@ -16,6 +16,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Solve the "Resource references will not work correctly..." warning
+        // Ref: https://stackoverflow.com/questions/51325513/cant-process-attribute-androidfillcolor-androidcolor-white
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {

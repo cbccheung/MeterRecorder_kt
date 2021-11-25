@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.bong.meterrecorder.R
@@ -19,10 +20,8 @@ import java.util.*
 
 
 class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.DatePickedListener, TimePickerDialogFragment.TimePickedListener {
-    //private lateinit var tilDate : TextInputLayout
-    //private lateinit var etDate : TextInputEditText
-    //private lateinit var tilTime : TextInputLayout
-    //private lateinit var etTime : TextInputEditText
+    private lateinit var viewModel: SingleReadingViewModel
+
     private lateinit var tilReading : TextInputLayout
     private lateinit var etReading : TextInputEditText
 
@@ -52,7 +51,7 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
 
         // View Model
         val factory = ViewModelUtil.createFor(SingleReadingViewModel(requireActivity().application, id))
-        val viewModel = ViewModelProvider(this, factory)[SingleReadingViewModel::class.java]
+        viewModel = ViewModelProvider(this, factory)[SingleReadingViewModel::class.java]
 
 
         val view = ViewEditReadingBinding.inflate(layoutInflater)
@@ -98,59 +97,16 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
                 }
             }
 
-            /*
-            tilDate = it.tilDate.apply {
-                setOnClickListener{
-                    Toast.makeText(context, "tilDate clicked", Toast.LENGTH_SHORT).show()
-                }
-            }
 
-            etDate = it.etDate.apply {
-
-                setOnClickListener{
-                    Toast.makeText(context, "etDate clicked", Toast.LENGTH_SHORT).show()
-                    var year: Int
-                    var month: Int
-                    var day: Int
-
-                    try {
-                        val text = etDate.text.toString().split("/")
-                        year = text[2].toInt()
-                        month = text[1].toInt()
-                        day = text[0].toInt()
-                    } catch (e: Exception){
-                        year = -1
-                        month = -1
-                        day = -1
+            etReading = it.etReading.apply {
+                addTextChangedListener(
+                    afterTextChanged = {
+                        isReadingValid()
                     }
-                    DatePickerDialogFragment.newInstance(
-                        year, month, day
-                    ).show(childFragmentManager, "date")
-                }
+                )
             }
-            etTime = it.etTime
-            tilTime = it.tilTime.apply {
-                setOnClickListener{
-                    var hour: Int
-                    var minute: Int
 
-                    try {
-                        val text = etDate.text.toString().split("/")
-                        hour = text[1].toInt()
-                        minute = text[0].toInt()
-                    } catch (e: Exception){
-                        hour = -1
-                        minute = -1
-                    }
-                    TimePickerDialogFragment.newInstance(
-                        hour, minute
-                    ).show(childFragmentManager, "time")
-                }
-            }
-            */
-            etReading = it.etReading
             tilReading = it.tilReading
-
 
         }
 
@@ -171,14 +127,20 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
             .setOnClickListener { v: View ->
                 run {
 
-                    if (!isDateValid() or !isTimeValid() or !isReadingValid()) {
+                    // Validations
+                    if (!isReadingValid()) {
+                        return@run
+                    }
+
+                    val oldItem = viewModel.item.value
+                    if(oldItem == null){
                         return@run
                     }
 
                     val item = Reading(
                         id = id,
                         value = etReading.text.toString().toFloat(),
-                        timeStamp = System.currentTimeMillis(),
+                        timeStamp = oldItem.timeStamp,
                         modified = System.currentTimeMillis()
                     )
 
@@ -194,83 +156,87 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
 
 
         // Load the record if it is not a new record
-        if (id == NEW_ID) {
-            val now = Calendar.getInstance()
-            with(now){
-                val year = get(Calendar.YEAR)
-                val month = get(Calendar.MONTH)
-                val dayOfMonth = get(Calendar.DAY_OF_MONTH)
 
-                val hour = get(Calendar.HOUR_OF_DAY)
-                val min = get(Calendar.MINUTE)
+        viewModel.item.observe(this, {
+            etReading.setText(
+                if(it.value.isNaN()) "" else it.value.toString()
+            )
+            setDateTime(it.timeStamp)
 
-                setDate(year, month, dayOfMonth)
-                setTime(hour, min)
-            }
-        } else {
-            viewModel.item.observe(this, {
-                etReading.setText(
-                    if(it.value.isNaN()) "" else it.value.toString()
-                )
-                setDate(it.timeStamp)
-                setTime(it.timeStamp)
+        })
 
-            })
-        }
 
         return dialog
     }
 
-    private fun isDateValid(): Boolean{
-        return true
-    }
-
-    private fun isTimeValid(): Boolean{
-        return true
-    }
-
 
     private fun isReadingValid(): Boolean{
-        return true
+
+        try{
+            val value = etReading.text.toString().toFloatOrNull()
+            if(value == null){
+                tilReading.error = resources.getString(R.string.enter_decimal_number)
+                return false
+            }
+            tilReading.error = null
+            return true
+        } catch (ex: NumberFormatException){
+            tilReading.error = resources.getString(R.string.enter_decimal_number)
+            return false
+        }
+
     }
 
 
 
     override fun onDatePicked(year: Int, month: Int, day: Int) {
-        setDate(day, month, year)
-    }
+        val item = viewModel.item.value
+        if (item != null) {
 
-    private fun setDate(ts: Long){
-        val cal = Calendar.getInstance().apply {
-            timeInMillis = ts
+            val newTimestamp = Calendar.getInstance().apply {
+                this.timeInMillis = item.timeStamp
+
+                this[Calendar.YEAR] = year
+                this[Calendar.MONTH] = month
+                this[Calendar.DAY_OF_MONTH] = day
+            }.timeInMillis
+
+            item.timeStamp = newTimestamp
+
+            setDateTime(newTimestamp)
         }
-
-        setDate(
-            cal[Calendar.YEAR], cal[Calendar.MONTH], cal[Calendar.DAY_OF_MONTH]
-        )
-    }
-
-    private fun setDate(year: Int, month: Int, day: Int){
-        //etDate.setText("${day}/${month}/${year}")
-        tvDate.setText(String.format("%02d/%02d/%04d", day, month, year))
     }
 
     override fun onTimePicked(hour: Int, minute: Int) {
-        setTime(hour, minute)
+        val item = viewModel.item.value
+        if (item != null) {
+
+            val newTimestamp = Calendar.getInstance().apply {
+                this.timeInMillis = item.timeStamp
+
+                this[Calendar.HOUR_OF_DAY] = hour
+                this[Calendar.MINUTE] = minute
+            }.timeInMillis
+
+            item.timeStamp = newTimestamp
+
+            setDateTime(newTimestamp)
+        }
     }
 
-    private fun setTime(ts: Long){
+    private fun setDateTime(ts: Long){
         val cal = Calendar.getInstance().apply {
             timeInMillis = ts
         }
 
-        setTime(
-            cal[Calendar.HOUR_OF_DAY], cal[Calendar.MINUTE]
-        )
+
+
+        //etDate.setText("${day}/${month}/${year}")
+        tvDate.text =
+            String.format("%02d/%02d/%04d", cal[Calendar.DAY_OF_MONTH], cal[Calendar.MONTH], cal[Calendar.YEAR])
+        tvTime.text = String.format("%02d:%02d", cal[Calendar.HOUR_OF_DAY], cal[Calendar.MINUTE])
     }
 
-    private fun setTime(hour: Int, minute: Int){
-        tvTime.setText(String.format("%02d:%02d", hour, minute))
 
-    }
+
 }

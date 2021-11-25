@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-
+        app:errorEnabled="true"
         >
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_reading"
@@ -25,54 +25,11 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!--
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:baselineAligned="false"
-        >
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            >
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="date"
-                android:hint="@string/date"
-                />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_time"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            >
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="time"
-                android:hint="@string/time"
-                />
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-    -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:baselineAligned="false"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
         >
 
         <com.google.android.material.textview.MaterialTextView
@@ -85,6 +42,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:focusable="true"
             android:clickable="true"
+            android:background="?attr/selectableItemBackground"
             tools:text="24/11/2021"
             />
         <com.google.android.material.textview.MaterialTextView
@@ -97,6 +55,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:focusable="true"
             android:clickable="true"
+            android:background="?attr/selectableItemBackground"
             tools:text="17:28"
             />
     </LinearLayout>

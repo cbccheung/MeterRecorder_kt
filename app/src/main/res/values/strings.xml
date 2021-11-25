@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Meter Recorder</string>
-    <string name="val_per_day">%f per day</string>
+    <string name="val_per_day">%s per day</string>
     <string name="reading">Reading</string>
     <string name="date_time">Date &amp; Time</string>
     <string name="new_reading">New Reading</string>
@@ -11,4 +11,8 @@
     <string name="time">Time</string>
     <string name="date">Date</string>
     <string name="more">More</string>
+    <string name="enter_decimal_number">Please enter a decimal number</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="no_items">No records</string>
 </resources>
