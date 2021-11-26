@@ -22,4 +22,6 @@
     <string name="enter_name">Please enter a name</string>
     <string name="name">Name</string>
     <string name="meter_name">Meter Name</string>
+    <string name="select_meter">Select a meter</string>
+    <string name="manage_meters">Manage Meters</string>
 </resources>
