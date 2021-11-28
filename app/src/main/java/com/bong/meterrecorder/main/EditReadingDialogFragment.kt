@@ -31,11 +31,13 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
 
     companion object{
 
+        const val KEY_METER_ID = "KEY_METER_ID"
         const val KEY_ID = "KEY_ID"
         const val NEW_ID = 0L   // New id
 
-        fun newInstance(id: Long? = null): EditReadingDialogFragment {
+        fun newInstance(meterId: Long, id: Long? = null): EditReadingDialogFragment {
             val args = Bundle().apply {
+                putLong(KEY_METER_ID, meterId)
                 putLong(KEY_ID, id?:NEW_ID)
             }
 
@@ -48,9 +50,10 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val args = requireArguments()
         val id = args.getLong(KEY_ID)
+        val meterId = args.getLong(KEY_METER_ID)
 
         // View Model
-        val factory = ViewModelUtil.createFor(SingleReadingViewModel(requireActivity().application, id))
+        val factory = ViewModelUtil.createFor(SingleReadingViewModel(requireActivity().application, meterId, id))
         viewModel = ViewModelProvider(this, factory)[SingleReadingViewModel::class.java]
 
 
@@ -59,41 +62,35 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
             tvDate = it.tvDate.apply {
 
                 setOnClickListener{
-                    var year: Int
-                    var month: Int
-                    var day: Int
+                    val ts = viewModel.item.value?.timeStamp
+                    if(ts != null){
 
-                    try {
-                        val text = tvDate.text.toString().split("/")
-                        year = text[2].toInt()
-                        month = text[1].toInt()
-                        day = text[0].toInt()
-                    } catch (e: Exception){
-                        year = -1
-                        month = -1
-                        day = -1
+                        val cal = Calendar.getInstance().apply {
+                            timeInMillis = ts
+                        }
+
+
+                        DatePickerDialogFragment.newInstance(
+                            cal[Calendar.YEAR], cal[Calendar.MONTH], cal[Calendar.DAY_OF_MONTH]
+                        ).show(childFragmentManager, "date")
+
                     }
-                    DatePickerDialogFragment.newInstance(
-                        year, month, day
-                    ).show(childFragmentManager, "date")
                 }
             }
             tvTime = it.tvTime.apply {
                 setOnClickListener{
-                    var hour: Int
-                    var minute: Int
+                    val ts = viewModel.item.value?.timeStamp
+                    if(ts != null){
+                        val cal = Calendar.getInstance().apply {
+                            timeInMillis = ts
+                        }
 
-                    try {
-                        val text = tvTime.text.toString().split(":")
-                        hour = text[0].toInt()
-                        minute = text[1].toInt()
-                    } catch (e: Exception){
-                        hour = -1
-                        minute = -1
+
+                        TimePickerDialogFragment.newInstance(
+                            cal[Calendar.HOUR], cal[Calendar.MINUTE]
+                        ).show(childFragmentManager, "date")
+
                     }
-                    TimePickerDialogFragment.newInstance(
-                        hour, minute
-                    ).show(childFragmentManager, "time")
                 }
             }
 
@@ -139,6 +136,7 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
 
                     val item = Reading(
                         id = id,
+                        meterId = meterId,
                         value = etReading.text.toString().toFloat(),
                         timeStamp = oldItem.timeStamp,
                         modified = System.currentTimeMillis()
@@ -233,7 +231,7 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
 
         //etDate.setText("${day}/${month}/${year}")
         tvDate.text =
-            String.format("%02d/%02d/%04d", cal[Calendar.DAY_OF_MONTH], cal[Calendar.MONTH], cal[Calendar.YEAR])
+            String.format("%02d/%02d/%04d", cal[Calendar.DAY_OF_MONTH], cal[Calendar.MONTH] + 1, cal[Calendar.YEAR])
         tvTime.text = String.format("%02d:%02d", cal[Calendar.HOUR_OF_DAY], cal[Calendar.MINUTE])
     }
 

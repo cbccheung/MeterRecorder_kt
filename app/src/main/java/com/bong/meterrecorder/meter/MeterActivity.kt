@@ -1,6 +1,7 @@
 package com.bong.meterrecorder.meter
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -73,6 +74,12 @@ class MeterActivity : AppCompatActivity() {
         }
     }
 
-
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
 }

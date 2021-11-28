@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,8 +19,11 @@ import com.bong.meterrecorder.meter.ChooseMeterDialogFragment
 import com.bong.meterrecorder.meter.MeterActivity
 import com.bong.meterrecorder.room.entities.Meter
 import com.bong.meterrecorder.room.viewmodels.ViewModelUtil
+import com.bong.meterrecorder.util.SettingsHelper
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ChooseMeterDialogFragment.MeterChosenListener{
+    private lateinit var settingsHelper: SettingsHelper
+    private lateinit var viewModel: MainViewModel
     private lateinit var _meters: List<Meter>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         val rv = binding.rv
         val adapter = MainAdapter(this)
         val tvEmpty = binding.tvEmpty
+
+        settingsHelper = SettingsHelper(this)
 
         // Set up recycler view
         with(rv){
@@ -47,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
 
         val factory = ViewModelUtil.createFor(MainViewModel(application))
-        val viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
+        viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
         viewModel.meters.observe(this, {
             _meters = it
@@ -58,8 +64,18 @@ class MainActivity : AppCompatActivity() {
                 return@observe
             }
             */
+            val selectedMeterId = settingsHelper.meterId
 
-            viewModel.setMeterId(it[0].id)
+            var selectedMeter = it.find { a -> a.id == selectedMeterId }
+            if(selectedMeter == null){
+                selectedMeter = it[0]
+            }
+
+            viewModel.setMeterId(selectedMeter.id)
+        })
+
+        viewModel.meter.observe(this, {
+            title = it.name
         })
 
         viewModel.readings.observe(this, {
@@ -77,11 +93,15 @@ class MainActivity : AppCompatActivity() {
             override fun onItemIdClicked(position: Int, viewId: Int) {
                 val item = adapter.currentList[position]
                 if(viewId == R.id.action_edit){
+                    val meter = getCurrentMeter()
+                    if(meter == null){
+                        return
+                    }
                     // Edit
-                    EditReadingDialogFragment.newInstance(item.id)
+                    EditReadingDialogFragment.newInstance(meterId = meter.id, id = item.reading.id)
                         .show(supportFragmentManager, "EditReadingDialogFragment")
                 } else if(viewId == R.id.action_delete){
-                    viewModel.delete(item)
+                    viewModel.delete(item.reading)
                 }
 
 
@@ -90,7 +110,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.fabAdd.apply {
             setOnClickListener {
-                EditReadingDialogFragment.newInstance()
+                val meter = getCurrentMeter()
+                if(meter == null){
+                    return@setOnClickListener
+                }
+
+                EditReadingDialogFragment.newInstance(meterId = meter.id)
                     .show(supportFragmentManager, "EditReadingDialogFragment")
             }
         }
@@ -104,10 +129,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == R.id.action_change_meter) {
+            val meterIds = arrayListOf<Long>()
+            val meterNames = arrayListOf<String>()
+
+            var currentIndex = 0
+            val currentMeterId = settingsHelper.meterId
+
+            _meters.forEachIndexed { index, meter ->
+                meterIds.add(meter.id)
+                meterNames.add(meter.name)
+                if(currentMeterId == meter.id){
+                    currentIndex = index
+                }
+            }
+
             ChooseMeterDialogFragment.newInstance(
-                meterNames = ArrayList(_meters),
-                currentIndex = 0
-            )
+                meterIds = meterIds,
+                meterNames = meterNames,
+                currentIndex = currentIndex
+            ).show(supportFragmentManager, "Choose")
+
         } else if(item.itemId == R.id.action_manage_meter){
             val intent = Intent(this, MeterActivity::class.java)
             startActivity(intent)
@@ -115,4 +156,24 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onMeterChosen(meterId: Long) {
+
+        val meter = _meters.find { a -> a.id == meterId }
+
+        if(meter == null){
+            // Meter id not found
+            Toast.makeText(this, resources.getString(R.string.meter_not_found), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        settingsHelper.meterId = meterId
+        viewModel.setMeterId(meterId)
+    }
+
+
+    //region Helper methods
+    private fun getCurrentMeter(): Meter? {
+        return viewModel.meter.value
+    }
+    //endregion
 }

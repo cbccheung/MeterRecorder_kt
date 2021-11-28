@@ -24,4 +24,5 @@
     <string name="meter_name">Meter Name</string>
     <string name="select_meter">Select a meter</string>
     <string name="manage_meters">Manage Meters</string>
+    <string name="meter_not_found">The selected meter cannot be found</string>
 </resources>

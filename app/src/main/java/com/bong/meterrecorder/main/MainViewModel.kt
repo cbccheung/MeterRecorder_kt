@@ -2,12 +2,13 @@ package com.bong.meterrecorder.main
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.bong.meterrecorder.room.entities.Meter
 import com.bong.meterrecorder.room.entities.Reading
+import com.bong.meterrecorder.room.entities.extras.ReadingWithPrev
 import com.bong.meterrecorder.room.repository.MeterRepository
 import com.bong.meterrecorder.room.repository.ReadingRepository
 import com.bong.meterrecorder.room.roomdb.DatabaseClient
 import kotlinx.coroutines.launch
+import java.util.*
 
 class MainViewModel(application: Application) : AndroidViewModel(application){
 
@@ -31,14 +32,37 @@ class MainViewModel(application: Application) : AndroidViewModel(application){
     // Readings
     val meterId = MutableLiveData<Long>()
 
-    val readings = Transformations.switchMap(meterId,
-        { id: Long ->
+    val meter = Transformations.switchMap(meterId
+    ){ id: Long->
+        meterRepos.getItem(id)
+    }
+
+    val readings = Transformations.map(
+        Transformations.switchMap(meterId
+        ) { id: Long ->
+            // Get all items from database
             readingRepos.getAllItems(id)
         }
-    )
+
+    ) {
+        // Data manipulation here
+        val result = arrayListOf<ReadingWithPrev>()
+        it.forEachIndexed { index: Int, reading: Reading ->
+            val nextReading = if (index < it.size - 1) it[index + 1] else null
+
+            result.add(
+                ReadingWithPrev(
+                    reading = reading,
+                    prevReading = nextReading
+                )
+            )
+        }
+
+        result
+    }
 
 
     fun setMeterId(id: Long){
-        this.meterId.value = id
+        this.meterId.postValue(id)
     }
 }

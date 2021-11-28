@@ -18,6 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".meter.MeterActivity"
+            android:label="@string/manage_meters"
+            android:parentActivityName=".MainActivity"
+            />
     </application>
 
 </manifest>

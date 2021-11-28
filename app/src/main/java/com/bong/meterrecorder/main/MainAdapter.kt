@@ -1,6 +1,7 @@
 package com.bong.meterrecorder.main
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,28 +12,28 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bong.meterrecorder.R
-import com.bong.meterrecorder.room.entities.Reading
+import com.bong.meterrecorder.room.entities.extras.ReadingWithPrev
 import com.bong.meterrecorder.util.DateTime
 import java.math.BigDecimal
 import java.util.*
 
 class MainAdapter(private val context: Context) :
-    ListAdapter<Reading, MainAdapter.MainViewHolder>(DIFF_CALLBACK) {
+    ListAdapter<ReadingWithPrev, MainAdapter.MainViewHolder>(DIFF_CALLBACK) {
 
     var itemClickListener: OnItemIdClickListener? = null
 
     companion object{
+        const val TAG = "MainAdapter"
         const val MILLIS_IN_A_DAY = 24*60*60*1000
 
-
         // Diff item callback
-        val DIFF_CALLBACK = object: DiffUtil.ItemCallback<Reading>() {
-            override fun areItemsTheSame(oldItem: Reading, newItem: Reading): Boolean {
+        val DIFF_CALLBACK = object: DiffUtil.ItemCallback<ReadingWithPrev>() {
+            override fun areItemsTheSame(oldItem: ReadingWithPrev, newItem: ReadingWithPrev): Boolean {
                 // Item properties may have changed if reloaded from the DB, but ID is fixed
-                return oldItem.id == newItem.id
+                return oldItem.reading.id == newItem.reading.id
             }
 
-            override fun areContentsTheSame(oldItem: Reading, newItem: Reading): Boolean {
+            override fun areContentsTheSame(oldItem: ReadingWithPrev, newItem: ReadingWithPrev): Boolean {
                 // == is equivalent to .equals in Java
                 return oldItem == newItem
             }
@@ -49,8 +50,7 @@ class MainAdapter(private val context: Context) :
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val item = getItem(position)
-        val nextItem = if(position < itemCount - 1) getItem(position + 1) else null
-        holder.bindItem(item, nextItem)
+        holder.bindItem(item)
     }
 
     inner class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -67,9 +67,9 @@ class MainAdapter(private val context: Context) :
         }
 
 
-        fun bindItem(item: Reading, nextItem: Reading?) {
+        fun bindItem(item: ReadingWithPrev) {
             val now = DateTime.now()
-            val ts = DateTime(item.timeStamp)
+            val ts = DateTime(item.reading.timeStamp)
 
             val thisYear = now.toCalendar().get(Calendar.YEAR)
             val tsYear = ts.toCalendar().get(Calendar.YEAR)
@@ -83,13 +83,24 @@ class MainAdapter(private val context: Context) :
             )
 
             tvDate.text = tsDisplay
-            tvReading.text = item.value.toString()
+            tvReading.text = item.reading.value.toString()
 
-            if(nextItem != null){
-                val params = intArrayOf(Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND, Calendar.MILLISECOND)
+
+            // Calculate difference if there is a next reading
+            tvChange.text = if(item.prevReading == null){
+                null
+            } else {
+
+                // Get time in mills (at midnight 00:00 by removing the time part) for the readings
+                val params = intArrayOf(
+                    Calendar.HOUR_OF_DAY,
+                    Calendar.MINUTE,
+                    Calendar.SECOND,
+                    Calendar.MILLISECOND
+                )
 
                 // Timestamp at 00:00 for current item
-                val currentTs = DateTime(item.timeStamp).toCalendar().apply {
+                val currentTs = DateTime(item.reading.timeStamp).toCalendar().apply {
                     params.forEach { i ->
                         set(i, 0)
                     }
@@ -97,7 +108,7 @@ class MainAdapter(private val context: Context) :
 
 
                 // Timestamp at 00:00 for the previous item
-                val oldTs = DateTime(nextItem.timeStamp).toCalendar().apply {
+                val oldTs = DateTime(item.prevReading.timeStamp).toCalendar().apply {
                     params.forEach { i ->
                         set(i, 0)
                     }
@@ -105,19 +116,21 @@ class MainAdapter(private val context: Context) :
 
                 val dayDiff = ((currentTs - oldTs) / MILLIS_IN_A_DAY).toInt()
 
-                tvChange.text = if(dayDiff == 0){
+                if (dayDiff == 0) {
                     null
                 } else {
-                    // Formula (item value - next item value) / dayDiff
-                    // Convert to BigDecimal to avoid precision lost
-                    val result = BigDecimal(item.value.toString())
-                        .subtract(BigDecimal(nextItem.value.toString()))
-                        .divide(BigDecimal(dayDiff)).toString()
+                    //Log.d(TAG, "readingDiff = ${item.diff.readingDiff}, dayDiff = ${item.diff.dayDiff}")
+                    val result = BigDecimal(item.reading.value.toString())
+                        .subtract(BigDecimal(item.prevReading.value.toString()))
+                        .divide(BigDecimal(dayDiff.toString()))
+                    tvChange.resources.getString(R.string.val_per_day, result)
 
+                    Log.d(TAG, "result = ${result}")
                     tvChange.resources.getString(R.string.val_per_day, result)
                 }
-
             }
+
+
         }
 
         private fun showPopupMenu(view: View) {
