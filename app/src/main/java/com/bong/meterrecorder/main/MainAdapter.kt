@@ -15,6 +15,7 @@ import com.bong.meterrecorder.R
 import com.bong.meterrecorder.room.entities.extras.ReadingWithPrev
 import com.bong.meterrecorder.util.DateTime
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 class MainAdapter(private val context: Context) :
@@ -122,7 +123,7 @@ class MainAdapter(private val context: Context) :
                     //Log.d(TAG, "readingDiff = ${item.diff.readingDiff}, dayDiff = ${item.diff.dayDiff}")
                     val result = BigDecimal(item.reading.value.toString())
                         .subtract(BigDecimal(item.prevReading.value.toString()))
-                        .divide(BigDecimal(dayDiff.toString()))
+                        .divide(BigDecimal(dayDiff.toString()), 3, RoundingMode.HALF_UP)
                     tvChange.resources.getString(R.string.val_per_day, result)
 
                     Log.d(TAG, "result = ${result}")
