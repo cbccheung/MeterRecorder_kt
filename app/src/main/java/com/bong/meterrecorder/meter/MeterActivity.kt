@@ -40,7 +40,7 @@ class MeterActivity : AppCompatActivity() {
 
         val factory = ViewModelUtil.createFor(MeterViewModel(application))
         val viewModel = ViewModelProvider(this, factory)[MeterViewModel::class.java]
-        viewModel.allItems.observe(this, {
+        viewModel.allItems.observe(this) {
             adapter.submitList(it)
 
             // Empty text visibility
@@ -49,7 +49,7 @@ class MeterActivity : AppCompatActivity() {
             } else {
                 View.GONE
             }
-        })
+        }
 
         adapter.itemClickListener = object: MeterAdapter.OnItemIdClickListener {
             override fun onItemIdClicked(position: Int, viewId: Int) {
@@ -76,8 +76,8 @@ class MeterActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == android.R.id.home){
-            onBackPressed();
-            return true;
+            onBackPressed()
+            return true
         }
         return super.onOptionsItemSelected(item)
     }

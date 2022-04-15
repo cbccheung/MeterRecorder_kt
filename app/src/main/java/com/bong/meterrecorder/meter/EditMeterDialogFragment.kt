@@ -15,7 +15,7 @@ import com.bong.meterrecorder.room.viewmodels.SingleMeterViewModel
 import com.bong.meterrecorder.room.viewmodels.ViewModelUtil
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import java.util.*
+
 
 
 class EditMeterDialogFragment: DialogFragment() {
@@ -109,11 +109,11 @@ class EditMeterDialogFragment: DialogFragment() {
 
         // Load the record if it is not a new record
 
-        viewModel.item.observe(this, {
+        viewModel.item.observe(this){
             etReading.setText(
                 it.name
             )
-        })
+        }
 
 
         return dialog

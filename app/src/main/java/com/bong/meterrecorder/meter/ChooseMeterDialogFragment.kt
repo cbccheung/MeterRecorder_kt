@@ -35,10 +35,10 @@ class ChooseMeterDialogFragment: DialogFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if (context is MeterChosenListener) {
-            listener = context as MeterChosenListener
+        listener = if (context is MeterChosenListener) {
+            context as MeterChosenListener
         } else {
-            listener = parentFragment as MeterChosenListener
+            parentFragment as MeterChosenListener
         }
     }
 

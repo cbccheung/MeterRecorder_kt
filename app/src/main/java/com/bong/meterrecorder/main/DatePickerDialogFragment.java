@@ -22,7 +22,7 @@ public class DatePickerDialogFragment extends DialogFragment implements DatePick
     // to that container activity as soon as they are entered by the user.
     public interface DatePickedListener
     {
-        public void onDatePicked(int year, int month, int day);
+        void onDatePicked(int year, int month, int day);
     }
 
     private DatePickedListener listener;
@@ -63,7 +63,7 @@ public class DatePickerDialogFragment extends DialogFragment implements DatePick
         // the activity passes in these arguments when it 
         // creates the dialog. use them to create the dialog
         // with these initial values set
-        Bundle b = getArguments();
+        Bundle b = requireArguments();
 
         int year = b.getInt(KEY_YEAR);
         int month = b.getInt(KEY_MONTH);

@@ -8,7 +8,7 @@ import com.bong.meterrecorder.room.repository.MeterRepository
 import com.bong.meterrecorder.room.repository.ReadingRepository
 import com.bong.meterrecorder.room.roomdb.DatabaseClient
 import kotlinx.coroutines.launch
-import java.util.*
+
 
 class MainViewModel(application: Application) : AndroidViewModel(application){
 
