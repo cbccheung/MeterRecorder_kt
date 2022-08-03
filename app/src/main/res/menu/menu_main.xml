@@ -7,14 +7,14 @@
         android:id="@+id/action_change_meter"
         android:orderInCategory="100"
         android:title="@string/select_meter"
-        app:showAsAction="ifRoom"
+        app:showAsAction="collapseActionView"
         />
 
     <item
         android:id="@+id/action_manage_meter"
         android:orderInCategory="100"
         android:title="@string/manage_meters"
-        app:showAsAction="ifRoom"
+        app:showAsAction="collapseActionView"
         />
 
 </menu>
