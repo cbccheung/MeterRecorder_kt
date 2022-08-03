@@ -36,7 +36,7 @@ class ChooseMeterDialogFragment: DialogFragment() {
         super.onAttach(context)
 
         listener = if (context is MeterChosenListener) {
-            context as MeterChosenListener
+            context
         } else {
             parentFragment as MeterChosenListener
         }
@@ -61,7 +61,7 @@ class ChooseMeterDialogFragment: DialogFragment() {
             }
             .setNegativeButton(R.string.cancel) {
                     dialog: DialogInterface?, which: Int ->
-                        dismiss();
+                        dismiss()
             }
             .setNeutralButton(R.string.manage_meters) {
                     dialog: DialogInterface?, which: Int ->
