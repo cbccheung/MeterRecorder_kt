@@ -35,10 +35,10 @@ class ChooseMeterDialogFragment: DialogFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if (context is MeterChosenListener) {
-            listener = context
+        listener = if (context is MeterChosenListener) {
+            context as MeterChosenListener
         } else {
-            listener = parentFragment as MeterChosenListener
+            parentFragment as MeterChosenListener
         }
     }
 
@@ -61,7 +61,7 @@ class ChooseMeterDialogFragment: DialogFragment() {
             }
             .setNegativeButton(R.string.cancel) {
                     dialog: DialogInterface?, which: Int ->
-                        dismiss()
+                        dismiss();
             }
             .setNeutralButton(R.string.manage_meters) {
                     dialog: DialogInterface?, which: Int ->

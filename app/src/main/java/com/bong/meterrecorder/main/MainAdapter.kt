@@ -15,6 +15,7 @@ import com.bong.meterrecorder.R
 import com.bong.meterrecorder.room.entities.extras.ReadingWithPrev
 import com.bong.meterrecorder.util.DateTime
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 class MainAdapter(private val context: Context) :
@@ -91,30 +92,8 @@ class MainAdapter(private val context: Context) :
                 null
             } else {
 
-                // Get time in mills (at midnight 00:00 by removing the time part) for the readings
-                val params = intArrayOf(
-                    Calendar.HOUR_OF_DAY,
-                    Calendar.MINUTE,
-                    Calendar.SECOND,
-                    Calendar.MILLISECOND
-                )
-
-                // Timestamp at 00:00 for current item
-                val currentTs = DateTime(item.reading.timeStamp).toCalendar().apply {
-                    params.forEach { i ->
-                        set(i, 0)
-                    }
-                }.timeInMillis
-
-
-                // Timestamp at 00:00 for the previous item
-                val oldTs = DateTime(item.prevReading.timeStamp).toCalendar().apply {
-                    params.forEach { i ->
-                        set(i, 0)
-                    }
-                }.timeInMillis
-
-                val dayDiff = ((currentTs - oldTs) / MILLIS_IN_A_DAY).toInt()
+                // Find the different in days between the 2 time stamps
+                val dayDiff = (item.reading.timeStamp / MILLIS_IN_A_DAY - item.prevReading.timeStamp / MILLIS_IN_A_DAY).toInt()
 
                 if (dayDiff == 0) {
                     null
@@ -122,10 +101,10 @@ class MainAdapter(private val context: Context) :
                     //Log.d(TAG, "readingDiff = ${item.diff.readingDiff}, dayDiff = ${item.diff.dayDiff}")
                     val result = BigDecimal(item.reading.value.toString())
                         .subtract(BigDecimal(item.prevReading.value.toString()))
-                        .divide(BigDecimal(dayDiff.toString()))
-                    tvChange.resources.getString(R.string.val_per_day, result)
+                        .divide(BigDecimal(dayDiff.toString()), 3, RoundingMode.HALF_UP)
 
-                    Log.d(TAG, "result = ${result}")
+
+                    Log.d(TAG, "result = $result")
                     tvChange.resources.getString(R.string.val_per_day, result)
                 }
             }

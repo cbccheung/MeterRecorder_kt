@@ -34,6 +34,7 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
         const val KEY_METER_ID = "KEY_METER_ID"
         const val KEY_ID = "KEY_ID"
         const val NEW_ID = 0L   // New id
+        private const val MILLIS_IN_A_MINUTE = 1000 * 60
 
         fun newInstance(meterId: Long, id: Long? = null): EditReadingDialogFragment {
             val args = Bundle().apply {
@@ -87,7 +88,7 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
 
 
                         TimePickerDialogFragment.newInstance(
-                            cal[Calendar.HOUR], cal[Calendar.MINUTE]
+                            cal[Calendar.HOUR_OF_DAY], cal[Calendar.MINUTE]
                         ).show(childFragmentManager, "date")
 
                     }
@@ -138,7 +139,7 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
                         id = id,
                         meterId = meterId,
                         value = etReading.text.toString().toFloat(),
-                        timeStamp = oldItem.timeStamp,
+                        timeStamp = oldItem.timeStamp / MILLIS_IN_A_MINUTE * MILLIS_IN_A_MINUTE,    //round to minute
                         modified = System.currentTimeMillis()
                     )
 
@@ -155,13 +156,13 @@ class EditReadingDialogFragment: DialogFragment(), DatePickerDialogFragment.Date
 
         // Load the record if it is not a new record
 
-        viewModel.item.observe(this, {
+        viewModel.item.observe(this){
             etReading.setText(
                 if(it.value.isNaN()) "" else it.value.toString()
             )
             setDateTime(it.timeStamp)
 
-        })
+        }
 
 
         return dialog

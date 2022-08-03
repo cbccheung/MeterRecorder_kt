@@ -22,7 +22,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
     // to that container activity as soon as they are entered by the user.
     public interface TimePickedListener
     {
-        public void onTimePicked(int hour, int minute);
+        void onTimePicked(int hour, int minute);
     }
 
     private TimePickedListener listener;
@@ -61,7 +61,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
         // the activity passes in these arguments when it 
         // creates the dialog. use them to create the dialog
         // with these initial values set
-        Bundle b = getArguments();
+        Bundle b = requireArguments();
 
         int hour = b.getInt(KEY_HOUR);
         int min = b.getInt(KEY_MIN);
